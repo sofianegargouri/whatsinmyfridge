@@ -7,7 +7,8 @@ import React, {
 } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {mockedProducts} from '../mocks';
-import {isEmpty, isEqual} from 'lodash';
+import uuid from 'react-native-uuid';
+import {filter, isEmpty, isEqual, map} from 'lodash';
 
 const ProductsContext = createContext();
 const storageKey = '@products';
@@ -20,6 +21,40 @@ export const ProductsProvider = ({children}) => {
     setProducts(JSON.parse(stringifiedProducts));
   }, [setProducts]);
 
+  const createProduct = useCallback(
+    data => {
+      setProducts([
+        ...products,
+        {
+          ...data,
+          id: uuid.v4(),
+          quantity: 1,
+        },
+      ]);
+    },
+    [products, setProducts],
+  );
+
+  const updateProduct = useCallback(
+    newProduct => {
+      setProducts(
+        map(products, product =>
+          product.id === newProduct.id ? newProduct : product,
+        ),
+      );
+    },
+    [products, setProducts],
+  );
+
+  const deleteProduct = useCallback(
+    productToDelete => {
+      setProducts(
+        filter(products, product => product.id !== productToDelete.id),
+      );
+    },
+    [products, setProducts],
+  );
+
   useEffect(() => {
     if (!isEmpty(products) && !isEqual(products, mockedProducts)) {
       AsyncStorage.setItem(storageKey, JSON.stringify(products));
@@ -31,7 +66,14 @@ export const ProductsProvider = ({children}) => {
   }, [initProducts]);
 
   return (
-    <ProductsContext.Provider value={[products, setProducts]}>
+    <ProductsContext.Provider
+      value={{
+        products,
+        setProducts,
+        createProduct,
+        updateProduct,
+        deleteProduct,
+      }}>
       {children}
     </ProductsContext.Provider>
   );

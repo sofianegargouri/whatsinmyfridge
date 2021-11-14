@@ -1,30 +1,43 @@
 import {map, sortBy} from 'lodash';
-import React, {useCallback, useMemo} from 'react';
-import {useProductsContext} from '../../contexts';
-import {updateProductFromStore} from '../../helpers/products';
+import React, {useMemo, useRef} from 'react';
+import {ScrollView} from 'react-native';
+import BottomSheet from '@gorhom/bottom-sheet';
 import {ProductCard} from './components';
+import {NewProductTextInput} from './styled-components';
+import {useProductsContext} from '../../contexts';
 
 export default () => {
-  const [products, setProducts] = useProductsContext();
+  const bottomSheetRef = useRef(null);
+  const newProductRef = useRef(null);
+  const snapPoints = useMemo(() => ['10%', '50%'], []);
+  const {products, createProduct, updateProduct} = useProductsContext();
   const sortedProducts = useMemo(
     () => sortBy(products, [product => product.quantity === 0, 'name']),
     [products],
   );
 
-  const onQuantityChange = useCallback(
-    (product, quantity) => {
-      if (quantity >= 0) {
-        setProducts(updateProductFromStore(products, {...product, quantity}));
-      }
-    },
-    [products, setProducts],
+  return (
+    <>
+      <ScrollView style={{flex: 1}}>
+        {map(sortedProducts, product => (
+          <ProductCard
+            key={product.id}
+            product={product}
+            onQuantityChange={quantity => updateProduct({...product, quantity})}
+          />
+        ))}
+      </ScrollView>
+      <BottomSheet ref={bottomSheetRef} index={0} snapPoints={snapPoints}>
+        <NewProductTextInput
+          autoFocus
+          placeholder="What's in your fridge ?"
+          ref={newProductRef}
+          onSubmitEditing={e => {
+            createProduct({name: e.nativeEvent.text})
+            newProductRef.current.clear();
+          }}
+        />
+      </BottomSheet>
+    </>
   );
-
-  return map(sortedProducts, product => (
-    <ProductCard
-      key={product.name}
-      product={product}
-      onQuantityChange={quantity => onQuantityChange(product, quantity)}
-    />
-  ));
 };

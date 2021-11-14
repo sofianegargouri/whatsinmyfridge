@@ -1,7 +1,7 @@
 import React from 'react';
-import {Text} from 'react-native';
 import {
   ProductCardButtons,
+  ProductCardName,
   ProductCardQuantity,
   ProductCardQuantityButton,
   ProductCardQuantityButtonText,
@@ -11,7 +11,7 @@ import {
 
 export default ({product, onQuantityChange}) => (
   <ProductCardWrapper disabled={product.quantity === 0}>
-    <Text>{product.name}</Text>
+    <ProductCardName>{product.name}</ProductCardName>
     <ProductCardButtons>
       <ProductCardQuantityButton
         onPress={() => onQuantityChange(product.quantity - 1)}>
