@@ -17,7 +17,11 @@ export const ProductCardName = styled.Text`
 
 export const ProductCardButtons = styled.View`
   flex-direction: row;
-  justify-content: flex-end;
+  justify-content: space-between;
+`;
+
+export const ProductCardButtonsGroup = styled.View`
+  flex-direction: row;
 `;
 
 export const ProductCardQuantityButton = styled.TouchableOpacity`

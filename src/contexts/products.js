@@ -8,7 +8,7 @@ import React, {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {mockedProducts} from '../mocks';
 import uuid from 'react-native-uuid';
-import {filter, isEmpty, isEqual, map} from 'lodash';
+import {concat, filter, isEmpty, isEqual, map} from 'lodash';
 
 const ProductsContext = createContext();
 const storageKey = '@products';
@@ -23,14 +23,9 @@ export const ProductsProvider = ({children}) => {
 
   const createProduct = useCallback(
     data => {
-      setProducts([
-        ...products,
-        {
-          ...data,
-          id: uuid.v4(),
-          quantity: 1,
-        },
-      ]);
+      setProducts(
+        concat(products || [], [{...data, id: uuid.v4(), quantity: 1}]),
+      );
     },
     [products, setProducts],
   );

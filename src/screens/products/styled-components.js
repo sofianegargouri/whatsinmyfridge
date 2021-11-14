@@ -1,6 +1,7 @@
+import {BottomSheetTextInput} from '@gorhom/bottom-sheet';
 import styled from 'styled-components/native';
 
-export const NewProductTextInput = styled.TextInput.attrs({
+export const NewProductTextInput = styled(BottomSheetTextInput).attrs({
   placeholderTextColor: '#92939B',
 })`
   align-self: stretch;

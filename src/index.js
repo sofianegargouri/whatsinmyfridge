@@ -1,18 +1,23 @@
 import React from 'react';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {SafeAreaView, StatusBar} from 'react-native';
+import {StatusBar} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
 import {Products} from './screens';
-import {ProductsProvider} from './contexts/products';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+
+const StackNavigator = createNativeStackNavigator();
 
 const App = () => (
-  <ProductsProvider>
+  <NavigationContainer>
     <GestureHandlerRootView style={{backgroundColor: '#1F1D2B', flex: 1}}>
       <StatusBar barStyle="light-content" />
-      <SafeAreaView style={{flex: 1}}>
-        <Products />
-      </SafeAreaView>
+      <StackNavigator.Navigator
+        initialRouteName="Products"
+        screenOptions={{headerShown: false}}>
+        <StackNavigator.Screen name="Products" component={Products} />
+      </StackNavigator.Navigator>
     </GestureHandlerRootView>
-  </ProductsProvider>
+  </NavigationContainer>
 );
 
 export default App;
