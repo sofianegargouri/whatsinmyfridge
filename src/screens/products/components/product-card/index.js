@@ -1,71 +1,59 @@
+import {trim} from 'lodash';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {
-  ProductCardButtons,
   ProductCardButtonsGroup,
+  ProductCardCartIcon,
+  ProductCardCartText,
+  ProductCardCartWrapper,
+  ProductCardIcon,
+  ProductCardIcons,
   ProductCardName,
-  ProductCardQuantity,
   ProductCardQuantityButton,
+  ProductCardQuantityButtons,
   ProductCardQuantityButtonText,
   ProductCardQuantityText,
+  ProductCardRow,
   ProductCardWrapper,
 } from './styled-components';
 
-export default ({product, onUpdate, onDelete}) => (
-  <ProductCardWrapper disabled={product.quantity === 0}>
-    <ProductCardName>{product.name}</ProductCardName>
-    <ProductCardButtons>
-      <ProductCardButtonsGroup>
+export default ({product, onUpdate, onDelete, onPress}) => (
+  <ProductCardWrapper disabled={product.quantity === 0} onPress={onPress}>
+    <ProductCardRow>
+      <ProductCardName>{trim(product.name)}</ProductCardName>
+      <ProductCardQuantityButtons>
         <ProductCardQuantityButton
-          onPress={() => onUpdate({...product, cart: !product.cart})}>
+          onPress={() =>
+            onUpdate({...product, quantity: Math.max(product.quantity - 1, 0)})
+          }>
           <ProductCardQuantityButtonText>
-            <Icon name={product.cart ? 'checkmark' : 'basket'} />
+            <Icon name="remove" />
           </ProductCardQuantityButtonText>
         </ProductCardQuantityButton>
-      </ProductCardButtonsGroup>
+        <ProductCardQuantityText>{product.quantity}</ProductCardQuantityText>
+        <ProductCardQuantityButton
+          onPress={() =>
+            onUpdate({...product, quantity: product.quantity + 1})
+          }>
+          <ProductCardQuantityButtonText>
+            <Icon name="add" />
+          </ProductCardQuantityButtonText>
+        </ProductCardQuantityButton>
+      </ProductCardQuantityButtons>
+    </ProductCardRow>
+    <ProductCardRow>
       <ProductCardButtonsGroup>
-        {product.quantity > 0 ? (
-          <>
-            <ProductCardQuantityButton
-              onPress={() =>
-                onUpdate({...product, quantity: product.quantity - 1})
-              }>
-              <ProductCardQuantityButtonText>
-                <Icon name="remove" />
-              </ProductCardQuantityButtonText>
-            </ProductCardQuantityButton>
-            <ProductCardQuantity>
-              <ProductCardQuantityText>
-                {product.quantity}
-              </ProductCardQuantityText>
-            </ProductCardQuantity>
-            <ProductCardQuantityButton
-              onPress={() =>
-                onUpdate({...product, quantity: product.quantity + 1})
-              }>
-              <ProductCardQuantityButtonText>
-                <Icon name="add" />
-              </ProductCardQuantityButtonText>
-            </ProductCardQuantityButton>
-          </>
-        ) : (
-          <>
-            <ProductCardQuantityButton
-              onPress={() =>
-                onUpdate({...product, quantity: product.quantity + 1})
-              }>
-              <ProductCardQuantityButtonText>
-                <Icon name="add" />
-              </ProductCardQuantityButtonText>
-            </ProductCardQuantityButton>
-            <ProductCardQuantityButton onPress={() => onDelete(product)}>
-              <ProductCardQuantityButtonText>
-                <Icon name="trash" />
-              </ProductCardQuantityButtonText>
-            </ProductCardQuantityButton>
-          </>
-        )}
+        <ProductCardCartWrapper
+          onPress={() => onUpdate({...product, cart: !product.cart})}>
+          <ProductCardCartIcon enabled={product.cart} name="cart" />
+          <ProductCardCartText enabled={product.cart}>
+            {product.cart ? 'Remove' : 'Add'}
+          </ProductCardCartText>
+        </ProductCardCartWrapper>
       </ProductCardButtonsGroup>
-    </ProductCardButtons>
+      <ProductCardIcons>
+        {product.frozen && <ProductCardIcon name="snow" />}
+      </ProductCardIcons>
+    </ProductCardRow>
   </ProductCardWrapper>
 );
